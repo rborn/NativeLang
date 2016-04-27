@@ -1,20 +1,14 @@
-var appModule = require('application');
+var application = require("application");
 var format = require('format');
+var utils = require('utils/utils');
 
-/*
-GLOBAL.L = require('nativeLang')();
 
-<Label text={{L('My Text')}} />
-*/
-
-module.exports = function () {
-	var res = appModule.android.context.getResources();
-
-	return function L () {
-		var args = Array.prototype.slice.call(arguments);
-		if( res )
-			args[0] = res.getString(args[0]);
-
-		return format.vsprintf.apply(this, args );
-	};
+application.resources.L = function(str) {
+	var context = utils.ad.getApplicationContext();
+	var res = context.getResources();
+	if (res) {
+		var resID = res.getIdentifier(str, "string", context.getPackageName());
+		var value = res.getString(resID);
+		return format.vsprintf.call(this, value);
+	}
 };
